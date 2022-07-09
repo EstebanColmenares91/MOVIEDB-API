@@ -1,6 +1,6 @@
 import { API_KEY } from "./secrets.js";
 const trendingMovies_URL = "https://api.themoviedb.org/3/trending/movie/day?api_key=" + API_KEY;
-const moviesGenre_URL = "https://api.themoviedb.org/3/genre/movie/list?api_key=" + API_KEY;
+const moviesGenre_URL = "https://api.themoviedb.org/3/genre/movie/list?api_key=" + API_KEY + "&language=en-US";
 
 async function getTrendingMoviesPreview() {
     try {
@@ -46,10 +46,11 @@ async function getMoviesGenrePreview() {
         
         if (res.status === 200) {
             const data = await res.json();
-            const movies = data.results;
+            console.log(data);
+            const categories = data.genres;
 
-            console.log({data, movies});
-            createMoviesGenrePreview(movies)
+            console.log({data, categories});
+            createMoviesGenrePreview(categories)
         } else {
             console.error('error');
         }
@@ -59,22 +60,20 @@ async function getMoviesGenrePreview() {
     }
 }
 
-function createMoviesGenrePreview(movies) {
-    movies.forEach(movie => {
-        const TrendingMoviesPreviewContainer = document.querySelector('#categoriesPreview .categoriesPreview-list')
+function createMoviesGenrePreview(categories) {
+    categories.forEach(category => {
+        const moviesGenrePreviewContainer = document.querySelector('#categoriesPreview .categoriesPreview-list')
 
-        const movieContainer = document.createElement('article');
-        movieContainer.classList.add('movie-container');
+        const categoriesContainer = document.createElement('div');
+        categoriesContainer.classList.add('genre-container');
 
-        const movieImg = document.createElement('img');
-        movieImg.classList.add('movie-img');
-
-        movieImg.setAttribute('alt', movie.title);
-        movieImg.setAttribute('title', movie.title);
-        movieImg.setAttribute('src', 'https://image.tmdb.org/t/p/w300' + movie.poster_path,);
+        const categoryTitle = document.createElement('h3');
+        categoryTitle.classList.add('genre-title');
+        categoryTitle.setAttribute('id', 'id' + category.id)
+        const categoryTitleText = document.createTextNode(category.name);
         
-        movieContainer.appendChild(movieImg);
-        TrendingMoviesPreviewContainer.appendChild(movieContainer);
+        categoriesContainer.appendChild(categoryTitleText);
+        moviesGenrePreviewContainer.appendChild(categoriesContainer);
     });
 }
 
