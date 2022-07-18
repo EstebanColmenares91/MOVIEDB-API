@@ -1,13 +1,27 @@
-import { API_KEY } from "./secrets.js";
-const trendingMovies_URL = "https://api.themoviedb.org/3/trending/movie/day?api_key=" + API_KEY;
-const moviesGenre_URL = "https://api.themoviedb.org/3/genre/movie/list?api_key=" + API_KEY + "&language=en-US";
+/* const trendingMovies_URL = "https://api.themoviedb.org/3/trending/movie/day?api_key=" + API_KEY; */
+/* const moviesGenre_URL = "https://api.themoviedb.org/3/genre/movie/list?api_key=" + API_KEY + "&language=en-US"; */
+
+/* Instanciando axios
+    1.Se crea la URL base para el momento de invocarlo no se repita una y otra vez
+    2.Se puede agregar params donde almacena el apikey para evitar la repetición
+*/
+const API = axios.create({
+    baseURL: 'https://api.themoviedb.org/3/',
+    headers:{
+        'Content-Type': 'application/json;charset=utf-8',
+    },
+    params:{
+        'api_key': API_KEY,
+    },
+})
 
 async function getTrendingMoviesPreview() {
     try {
-        const res = await fetch(trendingMovies_URL);
+        /* const res = await fetch(trendingMovies_URL); */
+        const {data, status} = await API('trending/movie/day');
         
-        if (res.status === 200) {
-            const data = await res.json();
+        if (status === 200) {
+            /* const data = await res.json(); */
             const movies = data.results;
 
             console.log({data, movies});
@@ -42,10 +56,9 @@ function createTrendingMoviesPreview(movies) {
 
 async function getMoviesGenrePreview() {
     try {
-        const res = await fetch(moviesGenre_URL);
+        const {data, status} = await API('genre/movie/list');
         
-        if (res.status === 200) {
-            const data = await res.json();
+        if (status === 200) {
             console.log(data);
             const categories = data.genres;
 
@@ -77,5 +90,3 @@ function createMoviesGenrePreview(categories) {
     });
 }
 
-getTrendingMoviesPreview();
-getMoviesGenrePreview();
