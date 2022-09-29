@@ -374,3 +374,13 @@ footer {
   text-align: center;
   border-radius: 1rem;
 }
+
+/* genre-titlee */
+
+.genre-title{
+  color: white;
+}
+
+.genre-container{
+  cursor: pointer;
+}

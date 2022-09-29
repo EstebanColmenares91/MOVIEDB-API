@@ -1,42 +1,46 @@
-searchFormBtn.addEventListener('click', ()=>{
-    location.hash = '#search='
+searchFormBtn.addEventListener('click', () => {
+    location.hash = '#search=' + searchFormInput.value.trim()
 })
 
-trendingBtn.addEventListener('click', ()=>{
+trendingBtn.addEventListener('click', () => {
     location.hash = '#trends'
 })
 
-arrowBtn.addEventListener('click', ()=>{
-    location.hash = '#home'
+arrowBtn.addEventListener('click', () => {
+    /* REGRESAR A LA HISTORIA ANTERIOR */
+    /* location.hash = window.history.back(); */
+    /* history.back() */
+    /* POR SI EL USUARIO INGRESA DESDE UNA URL QUE NO SEA HOME Y QUIERE TIRAR PARA ATRÁS SERÁ ENVIADO AL HOME DE LA PÁGINA Y NO A LA PÁGINA ANTERIOR QUE ESTABA*/
+    if (window.domain !== 'localhost') {
+        location.hash = '#home';
+    } else {
+        history.back()
+    }
 })
-
 
 window.addEventListener('DOMContentLoaded', navigator, false);//carga el contenido de la página
 window.addEventListener('hashchange', navigator, false);//escucha la petición
 
 function navigator() {
-    console.log({location});
-    
     if (location.hash.startsWith('#trends')) {
         trendsPage();
-    } else if(location.hash.startsWith('#search=')){
+    } else if (location.hash.startsWith('#search=')) {
         searchPage()
-    }else if(location.hash.startsWith('#movie=')){
+    } else if (location.hash.startsWith('#movie=')) {
         detailsPage()
-    }else if(location.hash.startsWith('#categories=')){
+    } else if (location.hash.startsWith('#categories=')) {
         categoriesPage();
-    }else{
+    } else {
         homePage();
     }
-}
 
-function refresh() {
-    location.reload();
+    /* Para cargar una página desde su inicio cada vez que cambia el hash */
+    document.body.scrollTop = 0;
+    document.documentElement.scrollTop = 0; 
+
 }
 
 function homePage() {
-    console.log('Home');
-
     headerSection.classList.remove('header-container--long');
     headerSection.style.background = '';
     arrowBtn.classList.add('inactive');
@@ -54,8 +58,6 @@ function homePage() {
 }
 
 function trendsPage() {
-    console.log('trends');
-    
     headerSection.classList.remove('header-container--long');
     headerSection.style.background = '';
     arrowBtn.classList.remove('inactive');
@@ -67,11 +69,14 @@ function trendsPage() {
     categoriesPreviewSection.classList.add('inactive');
     genericSection.classList.remove('inactive');
     movieDetailSection.classList.add('inactive');
+
+    headerCategoryTitle.innerHTML = 'Tendencias';
+
+    getTrendingMovies();
+
 }
 
-function detailsPage(){
-    console.log('detallitos');
-
+function detailsPage() {
     headerSection.classList.add('header-container--long');
     /* headerSection.style.background = ''; */
     arrowBtn.classList.remove('inactive');
@@ -84,11 +89,12 @@ function detailsPage(){
     categoriesPreviewSection.classList.add('inactive');
     genericSection.classList.add('inactive');
     movieDetailSection.classList.remove('inactive');
+
+    const [_, movieId] = location.hash.split("=");
+    getMovieById(movieId)
 }
 
 function searchPage() {
-    console.log('busqueda');
-
     headerSection.classList.remove('header-container--long');
     headerSection.style.background = '';
     arrowBtn.classList.remove('inactive');
@@ -100,11 +106,14 @@ function searchPage() {
     categoriesPreviewSection.classList.add('inactive');
     genericSection.classList.remove('inactive');
     movieDetailSection.classList.add('inactive');
+
+    // [#search, platzi]
+    const [_, query] = location.hash.split('=');
+    headerCategoryTitle.innerHTML = 'Has buscado: ' + query;
+    getMoviesBySearch(query);
 }
 
 function categoriesPage() {
-    console.log('categorias');
-
     headerSection.classList.remove('header-container--long');
     headerSection.style.background = '';
     arrowBtn.classList.remove('inactive');
@@ -117,11 +126,12 @@ function categoriesPage() {
     genericSection.classList.remove('inactive');
     movieDetailSection.classList.add('inactive');
 
-    ['#category', 'id-name']
+    /* ['#category', 'id-name'] */
     const [_, categoryData] = location.hash.split('=');
     const [categoryId, categoryName] = categoryData.split('-');
 
-    headerCategoryTitle.innerHTML = categoryName;
-    
+    const categoryNameReplace = categoryName.replace('%20', ' ');
+    headerCategoryTitle.innerHTML = categoryNameReplace;
+
     getMoviesByCategory(categoryId);
 }
